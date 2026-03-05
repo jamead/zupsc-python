@@ -11,15 +11,14 @@ def get_sa_data(psc_prefix):
 
   #create pv list 
   sa_pv = []
-  sa_pv.append(psc_prefix+"Sys-Temp-I") 
+  sa_pv.append(psc_prefix+"Temp:DfeSense0-I") 
   sa_pv.append(psc_prefix+"Chan1:DCCT1-I")
   sa_pv.append(psc_prefix+"Chan1:DCCT2-I") 
   sa_pv.append(psc_prefix+"Chan1:DAC-I")
   #sa_pv.append(psc_prefix+"Chan2:Volt-I")
   #sa_pv.append(psc_prefix+"Chan2:Gnd-I")
   #sa_pv.append(psc_prefix+"Chan2:Spare-I")
-  sa_pv.append(psc_prefix+"Chan1:Reg-I")
-  #sa_pv.append(psc_prefix+"Chan1:Sumterm-I")  #Regulator output (before quantizing to 20 bits)
+  sa_pv.append(psc_prefix+"Chan1:Sumterm-I")  #Regulator output (before quantizing to 20 bits)
   #sa_pv.append(psc_prefix+"Chan1:SetPtOut-I") #20 bit DAC word
   sa_pv.append(psc_prefix+"Chan1:Error-I") 
 
