@@ -63,9 +63,22 @@ ax[1, 1].set_ylabel("Counts")
 ax[1, 1].grid(True)
 
 
+
+
+
+fs = 10000
+
+fft = np.fft.rfft(col2)
+psd = 20*np.log10(np.abs(fft))
+
+freq = np.fft.rfftfreq(len(col2), d=1/fs)
+
+plt.plot(freq, psd)
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("dB")
+plt.title("ADC Noise Spectrum")
+
 plt.show()
-
-
 
 
 
