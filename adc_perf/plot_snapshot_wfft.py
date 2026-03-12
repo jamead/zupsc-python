@@ -42,6 +42,8 @@ def amp_spectrum_db(x, Fs):
     Uses rFFT, scales amplitude so a full-scale sine has correct amplitude.
     """
     N = len(x)
+    x = x / 2**20   # scale to ADC Full scale
+    
     X = np.fft.rfft(x)
     freq = np.fft.rfftfreq(N, d=1.0 / Fs)
 
@@ -51,6 +53,8 @@ def amp_spectrum_db(x, Fs):
 
     mag_db = 20.0 * np.log10(np.maximum(mag, 1e-20))  # avoid log(0)
     return freq, mag_db
+
+
 
 f2, db2 = amp_spectrum_db(col2, Fs)
 f3, db3 = amp_spectrum_db(col3, Fs)
@@ -68,49 +72,49 @@ bins3 = np.arange(np.min(col3) - 0.5, np.max(col3) + 1.5, 1.0)
 # Row 2: histogram
 # Row 3: FFT (dB)
 # -----------------------------
-fig, ax = plt.subplots(3, 2, figsize=(13, 9), constrained_layout=True)
+fig, ax = plt.subplots(3, 2, figsize=(10, 10), constrained_layout=True)
 
 # Time domain
 ax[0, 0].plot(t, col2)
-ax[0, 0].set_title(f"zPSC DCCT1 Time Domain (mean removed)  RMS={rms2:.3f}")
+ax[0, 0].set_title(f"zPSC DCCT1 Time Domain RMS={rms2:.3f}")
 ax[0, 0].set_xlabel("Time (s)")
 ax[0, 0].set_ylabel("ADC bits (mean removed)")
 ax[0, 0].grid(True)
 
 ax[0, 1].plot(t, col3)
-ax[0, 1].set_title(f"zPSC DCCT2 Time Domain (mean removed)  RMS={rms3:.3f}")
+ax[0, 1].set_title(f"zPSC DCCT2 Time Domain RMS={rms3:.3f}")
 ax[0, 1].set_xlabel("Time (s)")
 ax[0, 1].set_ylabel("ADC bits (mean removed)")
 ax[0, 1].grid(True)
 
 # Histogram
 ax[1, 0].hist(col2, bins=bins2)
-ax[1, 0].set_title("DCCT1 Histogram (mean removed)")
-ax[1, 0].set_xlabel("ADC bits (mean removed)")
+ax[1, 0].set_title("DCCT1 Histogram")
+ax[1, 0].set_xlabel("ADC bits")
 ax[1, 0].set_ylabel("Counts")
 ax[1, 0].grid(True)
 
 ax[1, 1].hist(col3, bins=bins3)
-ax[1, 1].set_title("DCCT2 Histogram (mean removed)")
-ax[1, 1].set_xlabel("ADC bits (mean removed)")
+ax[1, 1].set_title("DCCT2 Histogram")
+ax[1, 1].set_xlabel("ADC bits")
 ax[1, 1].set_ylabel("Counts")
 ax[1, 1].grid(True)
 
 # FFT in dB
 ax[2, 0].plot(f2, db2)
-ax[2, 0].set_title("DCCT1 FFT (Amplitude Spectrum, dBFS-like)")
+ax[2, 0].set_title("DCCT1 FFT (Amplitude Spectrum")
 ax[2, 0].set_xlabel("Frequency (Hz)")
-ax[2, 0].set_ylabel("Magnitude (dB)")
+ax[2, 0].set_ylabel("Magnitude (dBFs)")
 ax[2, 0].set_xlim(0, Fs / 2)
-ax[2, 0].set_ylim(-80,0)
+ax[2, 0].set_ylim(-160,0)
 ax[2, 0].grid(True)
 
 ax[2, 1].plot(f3, db3)
-ax[2, 1].set_title("DCCT2 FFT (Amplitude Spectrum, dBFS-like)")
+ax[2, 1].set_title("DCCT2 FFT (Amplitude Spectrum")
 ax[2, 1].set_xlabel("Frequency (Hz)")
-ax[2, 1].set_ylabel("Magnitude (dB)")
+ax[2, 1].set_ylabel("Magnitude (dBFs)")
 ax[2, 1].set_xlim(0, Fs / 2)
-ax[2, 1].set_ylim(-80,0)
+ax[2, 1].set_ylim(-160,0)
 ax[2, 1].grid(True)
 
 plt.suptitle(f"Snapshot Analysis: {filename}", y=1.02)
