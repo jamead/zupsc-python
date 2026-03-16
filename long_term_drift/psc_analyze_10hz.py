@@ -28,7 +28,7 @@ def plot_all(title, time, brdtemp, dcct1, dcct2, dac):
     FULL_SCALE = 10.0  # amps
 
     fig, ax = plt.subplots(4, 1, sharex=True, figsize=(12, 6), constrained_layout=True)
-    fig.suptitle(' Digital PID zPSC Long Term Drift', fontsize=14)
+    fig.suptitle(' Analog PID zPSC Long Term Drift', fontsize=14)
 
     # ---- DCCT1 ----
     sigma_dcct1 = np.std(dcct1) * 1e6  # uA
@@ -87,10 +87,12 @@ def plot_all(title, time, brdtemp, dcct1, dcct2, dac):
     
     
 
-  
+import numpy as np
 
-
-
+def moving_average_100(data):
+    window = 100
+    kernel = np.ones(window) / window
+    return np.convolve(data, kernel, mode='valid')  
 
 
 
@@ -119,9 +121,17 @@ def main():
    reg = data[:,5]
    err = data[:,6]
  
+   dcct1_filt = moving_average_100(dcct1)
+   dcct2_filt = moving_average_100(dcct2)
+   dac_filt = moving_average_100(dac)
+   temp_filt = moving_average_100(brdtemp)
+   time_trim = time[49:-50]
+   
+ 
+   print("len DCCT1_filt = %d" % len(dcct1_filt))
+   print("len time_trim = %d" % len(time_trim))
 
-
-   plot_all("Mag",time,brdtemp,dcct2,dcct1,dac)
+   plot_all("Mag",time_trim,temp_filt,dcct1_filt,dcct2_filt,dac_filt)
 
 
   
