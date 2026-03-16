@@ -131,7 +131,8 @@ def main():
    print("len DCCT1_filt = %d" % len(dcct1_filt))
    print("len time_trim = %d" % len(time_trim))
 
-   plot_all("Mag",time_trim,temp_filt,dcct1_filt,dcct2_filt,dac_filt)
+   plot_all("Mag",time,brdtemp,dcct1,dcct2,dac)
+   #plot_all("Mag",time_trim,temp_filt,dcct1_filt,dcct2_filt,dac_filt)
 
 
   
