@@ -28,7 +28,7 @@ def plot_all(title, time, brdtemp, dcct1, dcct2, dac):
     FULL_SCALE = 10.0  # amps
 
     fig, ax = plt.subplots(4, 1, sharex=True, figsize=(12, 6), constrained_layout=True)
-    fig.suptitle('Analog PID zPSC Long Term Drift', fontsize=14)
+    fig.suptitle(' Digital PID zPSC Long Term Drift', fontsize=14)
 
     # ---- DCCT1 ----
     sigma_dcct1 = np.std(dcct1) * 1e6  # uA
@@ -121,7 +121,7 @@ def main():
  
 
 
-   plot_all("Mag",time,brdtemp,dcct1,dcct2,dac)
+   plot_all("Mag",time,brdtemp,dcct2,dcct1,dac)
 
 
   
