@@ -64,16 +64,13 @@ def main():
 
     # Read waveform
     snapshot_data = get_waveform(snapshot_pv, 100000)
-    snapshot_data = snapshot_data.T
     print(type(snapshot_data))
     rows, cols = snapshot_data.shape
     print(f"Number of rows: {rows}")
     print(f"Number of columns: {cols}")
-    scales = np.array([3276.8, 52428.8, 52428.8])
-    snapshot_data = snapshot_data * scales
 
     # Save to file
-    np.savetxt(out_filename, snapshot_data, fmt="%f", delimiter=" ")
+    np.savetxt(out_filename, snapshot_data.T, fmt="%f", delimiter=" ")
     print(f"Saved Snapshot data to {out_filename}")
 
 

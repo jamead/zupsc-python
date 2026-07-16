@@ -10,7 +10,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 filename = sys.argv[1]
-Fs = 10000.0  # Hz
+Fs = 100000.0  # Hz
 
 # Load the file (space separated columns)
 data = np.loadtxt(filename)
@@ -33,6 +33,42 @@ print(f"DCCT2: mean={np.mean(col3):.6f}  RMS={rms3:.6f}  sigma={sigma3:.6f}")
 N = len(col2)
 t = np.arange(N) / Fs
 
+
+# -----------------------------
+# PSD (dBFS/Hz) with Hann window
+# -----------------------------
+def psd_dbfs(x, Fs):
+    N = len(x)
+
+    # scale to full scale (signed ADC)
+    x = x / (2**19)
+
+    # window
+    w = np.hanning(N)
+    xw = x * w
+
+    # FFT
+    X = np.fft.rfft(xw)
+    freq = np.fft.rfftfreq(N, d=1/Fs)
+
+    # window power normalization
+    U = np.mean(w**2)
+
+    # PSD (one-sided)
+    Pxx = (np.abs(X)**2) / (Fs * N * N * U)
+    if N > 1:
+        Pxx[1:-1] *= 2
+
+    # convert to dBFS/Hz
+    Pxx_db = 10 * np.log10(np.maximum(Pxx, 1e-30))
+
+    return freq, Pxx_db
+
+
+
+
+
+
 # -----------------------------
 # FFT (single-sided amplitude spectrum)
 # -----------------------------
@@ -42,7 +78,7 @@ def amp_spectrum_db(x, Fs):
     Uses rFFT, scales amplitude so a full-scale sine has correct amplitude.
     """
     N = len(x)
-    x = x / 2**20   # scale to ADC Full scale
+    x = x / 2**19   # scale to ADC Full scale
     
     X = np.fft.rfft(x)
     freq = np.fft.rfftfreq(N, d=1.0 / Fs)
@@ -76,13 +112,13 @@ fig, ax = plt.subplots(3, 2, figsize=(10, 10), constrained_layout=True)
 
 # Time domain
 ax[0, 0].plot(t, col2)
-ax[0, 0].set_title(f"zPSC DCCT1 Time Domain RMS={rms2:.3f}")
+ax[0, 0].set_title(f"zuPSC DCCT1 Time Domain RMS={rms2:.3f}")
 ax[0, 0].set_xlabel("Time (s)")
 ax[0, 0].set_ylabel("ADC bits (mean removed)")
 ax[0, 0].grid(True)
 
 ax[0, 1].plot(t, col3)
-ax[0, 1].set_title(f"zPSC DCCT2 Time Domain RMS={rms3:.3f}")
+ax[0, 1].set_title(f"zuPSC DCCT2 Time Domain RMS={rms3:.3f}")
 ax[0, 1].set_xlabel("Time (s)")
 ax[0, 1].set_ylabel("ADC bits (mean removed)")
 ax[0, 1].grid(True)
