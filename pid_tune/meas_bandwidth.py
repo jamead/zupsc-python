@@ -26,7 +26,7 @@ def get_waveform(PVs,numpts):
 def wait_snapshot(trig_pv,wfmrdy_pv):
 
   # Trigger the snapshot
-  # trig_pv.put(1)
+  trig_pv.put(1)
   print("Triggering Snapshot...")
   time.sleep(1)
   print("Waiting for Snapshot Data... ")
@@ -45,14 +45,14 @@ def wait_snapshot(trig_pv,wfmrdy_pv):
 
 
 
-def plot_snapshot(snapshot_data, kp, ki, ax=None):
+def plot_snapshot(snapshot_data, freq, ax=None):
     dac   = snapshot_data[:, 0]
     dcct1 = snapshot_data[:, 1]
 
     if ax is None:
         fig, ax = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
 
-    label = f"kp={kp:.3f}, ki={ki:.3f}"
+    label = f"freq={freq}"
 
     ax[0].plot(dac, label=label)
     ax[0].set_ylabel("DAC")
@@ -80,7 +80,9 @@ def main():
         epics.PV(psc_prefix+'Chan1:USR:DCCT1-Wfm'),
         epics.PV(psc_prefix+'Chan1:USR:DCCT2-Wfm'),]
   
-
+    #get PV names
+    dds_enb_pv = epics.PV(psc_prefix+'Chan1:DAC-DDS-Enb-SP')
+    dds_freq_pv = epics.PV(psc_prefix+'Chan1:DAC-DDS-Freq-SP')
     trig_pv = epics.PV(psc_prefix+'Chan1:SS:Trig:Usr')
     dac_setpt_pv = epics.PV(psc_prefix+'Chan1:DAC_SetPt-SP')
     pid_rst_int_pv = epics.PV(psc_prefix+'Chan1:DPIDResetI-SP')
@@ -91,34 +93,30 @@ def main():
     fig, ax = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
     
     ki = 0.01
-    for kp in np.arange(0.1, 1, 0.2):
-      print("Set DAC to zero...")
-      dac_setpt_pv.put(0)
+    kp = 0.5
+    
+    #initialize dpid (open loop, enable Reset)
+    pid_rst_int_pv.put(1)
+    kp_pv.put(kp)
+    ki_pv.put(ki)
+    dac_setpt_pv.put(0)
+    
+    for freq in np.arange(100, 1000, 100):
+      print("Setting DDS Freq to %d" % freq)
+      dds_freq_pv.put(freq)
+      time.sleep(1);
       wait_snapshot(trig_pv,wfmrdy_pv)
       time.sleep(1);
-      pid_rst_int_pv.put(1)
-      kp_pv.put(kp)
-      ki_pv.put(ki)
-    
-      #remove integrator reset
-      pid_rst_int_pv.put(0)
-      time.sleep(1)
-      #set dac
-      print("Setting DAC to 5A...    Kp=%f   Ki=%f" % (kp, ki))
-      dac_setpt_pv.put(1)
-    
-      #wait for the snapshot post trigger
-      wait_snapshot(trig_pv,wfmrdy_pv)
 
-      time.sleep(1)
+
 
       # Read waveform
       snapshot_data = get_waveform(snapshot_pv, 100000)
   
       # Fix orientation
       snapshot_data = snapshot_data.T
-      snapshot_data = snapshot_data[49000:80000, :]
-      plot_snapshot(snapshot_data,kp,ki,ax=ax)
+      snapshot_data = snapshot_data[0:1000, :]
+      plot_snapshot(snapshot_data,freq,ax=ax)
 
 
     ax[0].legend()
