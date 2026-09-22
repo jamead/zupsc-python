@@ -181,8 +181,8 @@ def main():
         psc_prefix + "Chan1:UsrTrigActive-I"
     )
 
-    ki = 0.01
-    kp = 0.5
+    ki = 0.0008
+    kp = 1.2
 
     # Initialize DPID/open-loop test configuration
     pid_rst_int_pv.put(1)
@@ -194,9 +194,9 @@ def main():
     frequencies_to_test = np.concatenate(
         (
             np.arange(1.0, 20.0, 1.0),
-            np.arange(20.0, 50.0, 2.0),
-            np.arange(50.0, 100.0, 5.0),
-            np.arange(100.0, 500.0, 10.0),
+            np.arange(20.0, 50.0, 10.0),
+            np.arange(50.0, 100.0, 50.0),
+            np.arange(100.0, 2000.0, 100.0),
         )
     )
 
@@ -304,11 +304,11 @@ def main():
                 f"{np.degrees(phase_difference_rad):.3f} degrees"
             )
 
-            plot_snapshot(
-                snapshot_data,
-                freq,
-                waveform_ax
-            )
+            #plot_snapshot(
+            #    snapshot_data,
+            #    freq,
+            #    waveform_ax
+            #)
 
     finally:
         dac_setpt_pv.put(0)

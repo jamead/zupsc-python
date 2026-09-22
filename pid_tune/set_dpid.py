@@ -90,7 +90,7 @@ def main():
     
     fig, ax = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
     
-    ki = 0.01
+    ki = 0.014
     for kp in np.arange(0.1, 1, 0.2):
       print("Set DAC to zero...")
       dac_setpt_pv.put(0)
